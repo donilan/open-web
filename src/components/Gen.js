@@ -94,8 +94,10 @@ const ReduxGenForm = reduxForm({
   /* fields: ['rows', 'format', 'fields[].name', 'fields[].type', 'fields[].options'], */
   validate,
   initialValues: {rows: 100, format: 'JSON', fields: [
-    {name: 'id', type: 'id'},
+    {name: 'id', type: 'row_number'},
     {name: 'uuid', type: 'uuid'},
+    {name: 'first_name', type: 'first_name_en'},
+    {name: 'last_name', type: 'last_name_en'},
     {name: 'brithday', type: 'date'},
   ]}
 })(GenForm);

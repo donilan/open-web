@@ -125,10 +125,9 @@ class GenField extends Component {
   }
 
   renderConfigBtn(){
-    if(!this.getFieldMeta())
-      return null
+    let meta = this.getFieldMeta();
     return (
-      <Button bsStyle="primary" bsSize="small"
+      <Button bsStyle="primary" bsSize="small" disabled={!meta || !meta.params}
         onClick={()=>this.setState({dialogOpen: true})}>Config</Button>
     );
   }
