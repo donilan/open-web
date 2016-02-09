@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import {reduxForm, addArrayValue} from 'redux-form';
 import {fetchData} from '../actions/gen';
+import {Button, Table, Input} from 'react-bootstrap';
 
 import _ from 'lodash';
 
@@ -16,7 +17,6 @@ class Gen extends Component {
   }
 
   renderPreview() {
-    console.log(this.props.gen.data);
     if(this.props.gen.data.length > 0) {
       var result = _.join(this.props.gen.data, "\n")
       return <pre>{result}</pre>;
@@ -30,14 +30,14 @@ class Gen extends Component {
       return (
         <tr key={i}>
           <td>
-            <input type="text" {...f.name} />
+            <Input type="text" {...f.name} />
           </td>
           <td>
-            <select {...f.type} value={f.type.value || ''}>
+            <Input type="select" {...f.type} value={f.type.value || ''}>
               {_.map(_.keys(this.props.gen.fieldsMeta), (key)=>{
                 return <option key={key} value={key}>{this.props.gen.fieldsMeta[key].desc}</option>;
                })}
-            </select>
+            </Input>
           </td>
         </tr>
       );
@@ -46,7 +46,7 @@ class Gen extends Component {
     return (
       <div>
         <form onSubmit={handleSubmit(fetchData)}>
-          <table>
+          <Table>
             <thead>
               <tr>
                 <th>Field Name</th>
@@ -56,11 +56,13 @@ class Gen extends Component {
             <tbody>
               {fieldRows}
             </tbody>
-          </table>
-          <div><button type="button" onClick={fields.addField}>Add Field</button></div>
+          </Table>
           <div>
-            Rows: <input type="text" {...rows} />
-            <button type="submit">submit</button>
+            <Button bsStyle="primary" type="button" onClick={fields.addField}>Add Field</Button>
+          </div>
+          <div>
+            Rows: <Input type="text" {...rows}
+                    buttonAfter={<Button bsStyle="primary" type="submit">submit</Button>} />
           </div>
         </form>
         {this.renderPreview()}

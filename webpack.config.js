@@ -25,10 +25,18 @@ module.exports = {
     extensions: ['', '.js']
   },
   module: {
-    loaders: [{
-      test: /\.js$/,
-      loaders: ['babel'],
-      exclude: /node_modules/
-    }]
+    loaders: [
+      {
+        test: /\.js$/,
+        loaders: ['babel'],
+        exclude: /node_modules/
+      }, {
+        test: /\.(png|jpg|ttf|eot|svg|woff2|woff)$/,
+        loader: 'url?limit=25000'
+      }, {
+        test: /\.scss$/,
+        loader: 'style!css!sass'
+      }
+    ]
   }
 };
