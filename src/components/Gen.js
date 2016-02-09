@@ -1,9 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import {reduxForm, addArrayValue} from 'redux-form';
 import {fetchData} from '../actions/gen';
-import {Button, Table, Input} from 'react-bootstrap';
+import {Button, Table, Input, ListGroup, ListGroupItem} from 'react-bootstrap';
+
+import HTML5Backend from 'react-dnd-html5-backend';
+import { DragDropContext } from 'react-dnd';
 
 import _ from 'lodash';
+import GenField from './GenField';
 
 class Gen extends Component {
   static propTypes = {
@@ -24,45 +28,42 @@ class Gen extends Component {
     return null;
   }
 
+  moveField(dragIndex, hoverIndex) {
+    this.props.fields.fields.swapFields(dragIndex, hoverIndex);
+  }
+
   render() {
     const {fields: {fields, rows, format}, handleSubmit} = this.props;
     var fieldRows = _.map(fields, (f, i)=> {
-      return (
-        <tr key={i}>
-          <td>
-            <Input type="text" {...f.name} />
-          </td>
-          <td>
-            <Input type="select" {...f.type} value={f.type.value || ''}>
-              {_.map(_.keys(this.props.gen.fieldsMeta), (key)=>{
-                return <option key={key} value={key}>{this.props.gen.fieldsMeta[key].desc}</option>;
-               })}
-            </Input>
-          </td>
-        </tr>
-      );
+      return <GenField key={i} field={f} index={i} fieldsMeta={this.props.gen.fieldsMeta}
+             moveField={this.moveField.bind(this)}/>;
     });
 
     return (
-      <div>
+      <div className="container">
         <form onSubmit={handleSubmit(fetchData)}>
-          <Table>
-            <thead>
-              <tr>
-                <th>Field Name</th>
-                <th>Field Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {fieldRows}
-            </tbody>
-          </Table>
-          <div>
-            <Button bsStyle="primary" type="button" onClick={fields.addField}>Add Field</Button>
+          <div className="row">
+            <div className="col-xs-1">
+              <Button bsStyle="success" bsSize="xsmall" type="button"
+                onClick={fields.addField}>ADD</Button>
+            </div>
+            <div className="col-xs-2">Field Name</div>
+            <div className="col-xs-2">Field Type</div>
           </div>
-          <div>
-            Rows: <Input type="text" {...rows}
-                    buttonAfter={<Button bsStyle="primary" type="submit">submit</Button>} />
+          {fieldRows}
+          <div className="row">
+            <div className="col-xs-4">
+              <Input type="text" addonBefore="# Rows"
+                buttonAfter={<Button bsStyle="primary"
+                             type="submit" value="preview">Preview</Button>}
+                                                                    {...rows} />
+            </div>
+            <div className="col-xs-4">
+              <Input type="text" addonBefore="Format" disabled={true}
+                buttonAfter={<Button bsStyle="primary"
+                             type="submit" value="download" disabled={true}>Download</Button>}
+                                                                      {...format} />
+            </div>
           </div>
         </form>
         {this.renderPreview()}
@@ -71,12 +72,14 @@ class Gen extends Component {
   }
 }
 
-export default reduxForm({
+const GenForm = reduxForm({
   form: 'genForm',
   fields: ['rows', 'format', 'fields[].name', 'fields[].type', 'fields[].options'],
-  initialValues: {rows: 100, format: 'json', fields: [
+  initialValues: {rows: 100, format: 'JSON', fields: [
     {name: 'id', type: 'id'},
     {name: 'uuid', type: 'uuid'},
     {name: 'brithday', type: 'date'},
   ]}
 })(Gen);
+
+export default DragDropContext(HTML5Backend)(GenForm);
