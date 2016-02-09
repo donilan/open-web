@@ -79,22 +79,57 @@ class GenField extends Component {
     this.state = {dialogOpen: false};
   }
 
+  getFieldMeta(){
+    return this.props.fieldsMeta && this.props.fieldsMeta[this.props.field.type.value];
+  }
+
   renderDialog() {
+    let meta = this.getFieldMeta();
+    if(!meta)
+      return null;
+    let inputs = _.map(meta.params, (p, i)=>{
+      let type = {
+        integer: 'number',
+        bool: 'checkbox',
+        boolean: 'checkbox',
+        string: 'text',
+        date: 'text'
+      }[p.type];
+      let f = this.props.field[p.name];
+      return (
+        <div className="row" key={i}>
+          <div className="col-xs-5">
+            <label>{p.desc}</label>
+          </div>
+          <div className="col-xs-7">
+            <Input type={type} value={f.value || p.default} {...f} />
+          </div>
+        </div>
+      );
+    });
     return (
       <Modal show={this.state.dialogOpen} onHide={()=>this.setState({dialogOpen: false})}>
         <Modal.Header>
-          <Modal.Title>Modal title</Modal.Title>
+          <Modal.Title>Config for {meta.name}</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
-          One fine body...
+          {inputs}
         </Modal.Body>
 
         <Modal.Footer>
           <Button onClick={()=>this.setState({dialogOpen: false})}>Close</Button>
-          <Button bsStyle="primary">Save changes</Button>
         </Modal.Footer>
       </Modal>
+    );
+  }
+
+  renderConfigBtn(){
+    if(!this.getFieldMeta())
+      return null
+    return (
+      <Button bsStyle="primary" bsSize="small"
+        onClick={()=>this.setState({dialogOpen: true})}>Config</Button>
     );
   }
 
@@ -118,8 +153,7 @@ class GenField extends Component {
         </div>
         <div className="col-xs-4">
           <ButtonGroup>
-            <Button bsStyle="primary" bsSize="small"
-              onClick={()=>this.setState({dialogOpen: true})}>Config</Button>
+            {this.renderConfigBtn()}
             <Button bsStyle="danger" bsSize="small"
               onClick={(e)=> this.props.removeField(e, index)} >Remove</Button>
           </ButtonGroup>

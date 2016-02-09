@@ -9,16 +9,12 @@ import { DragDropContext } from 'react-dnd';
 import _ from 'lodash';
 import GenField from './GenField';
 
-class Gen extends Component {
+
+class GenForm extends Component {
   static propTypes = {
-    gen: PropTypes.object.isRequired,
     fields: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func.isRequired,
   };
-
-  componentWillMount() {
-    this.props.fetchFieldsMeta();
-  }
 
   renderPreview() {
     if(this.props.gen.data.length > 0) {
@@ -93,15 +89,35 @@ function validate(data) {
   errors.fields = _.map(data.fields, requireFields('name', 'type'));
   return errors;
 }
-const GenForm = reduxForm({
+const ReduxGenForm = reduxForm({
   form: 'genForm',
-  fields: ['rows', 'format', 'fields[].name', 'fields[].type', 'fields[].options'],
+  /* fields: ['rows', 'format', 'fields[].name', 'fields[].type', 'fields[].options'], */
   validate,
   initialValues: {rows: 100, format: 'JSON', fields: [
     {name: 'id', type: 'id'},
     {name: 'uuid', type: 'uuid'},
     {name: 'brithday', type: 'date'},
   ]}
-})(Gen);
+})(GenForm);
 
-export default DragDropContext(HTML5Backend)(GenForm);
+const DndReduxGenForm = DragDropContext(HTML5Backend)(ReduxGenForm);
+export default class Gen extends Component {
+  static propTypes = {
+    gen: PropTypes.object.isRequired,
+  };
+
+  componentWillMount() {
+    this.props.fetchFieldsMeta();
+  }
+
+  render() {
+    let meta = this.props.gen.fieldsMeta;
+    if(!meta)
+      return <h1>Loading...</h1>;
+    let extraFields = _.uniq(_.flatten(_.map(_.values(meta), (m)=> {
+      return _.map(m.params, (p)=> `fields[].${p.name}`);
+    })));
+    let fields = ['rows', 'format', 'fields[].name', 'fields[].type'].concat(extraFields);
+    return <DndReduxGenForm fields={fields} {...this.props} />;
+  }
+}
