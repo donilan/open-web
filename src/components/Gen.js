@@ -31,12 +31,15 @@ class Gen extends Component {
   moveField(dragIndex, hoverIndex) {
     this.props.fields.fields.swapFields(dragIndex, hoverIndex);
   }
+  removeField(e, index) {
+    this.props.fields.fields.removeField(index);
+  }
 
   render() {
     const {fields: {fields, rows, format}, handleSubmit} = this.props;
     var fieldRows = _.map(fields, (f, i)=> {
       return <GenField key={i} field={f} index={i} fieldsMeta={this.props.gen.fieldsMeta}
-             moveField={this.moveField.bind(this)}/>;
+             moveField={this.moveField.bind(this)} removeField={this.removeField.bind(this)}/>;
     });
 
     return (
@@ -45,21 +48,22 @@ class Gen extends Component {
           <div className="row">
             <div className="col-xs-1">
               <Button bsStyle="success" bsSize="xsmall" type="button"
-                onClick={fields.addField}>ADD</Button>
+                onClick={(e)=>{fields.addField({name: `field_${fields.length+1}`})}}>ADD</Button>
             </div>
             <div className="col-xs-2">Field Name</div>
-            <div className="col-xs-2">Field Type</div>
+            <div className="col-xs-4">Field Type</div>
+            <div className="col-xs-4">Options</div>
           </div>
           {fieldRows}
           <div className="row">
             <div className="col-xs-4">
-              <Input type="text" addonBefore="# Rows"
+              <Input type="text" addonBefore="# Rows" bsStyle={rows.error ? 'error' : null}
                 buttonAfter={<Button bsStyle="primary"
                              type="submit" value="preview">Preview</Button>}
                                                                     {...rows} />
             </div>
             <div className="col-xs-4">
-              <Input type="text" addonBefore="Format" disabled={true}
+              <Input type="text" addonBefore="Format" disabled={true} bsStyle={format.error ? 'error' : null}
                 buttonAfter={<Button bsStyle="primary"
                              type="submit" value="download" disabled={true}>Download</Button>}
                                                                       {...format} />
@@ -72,9 +76,27 @@ class Gen extends Component {
   }
 }
 
+const requireFields = (...names) => data =>
+names.reduce((errors, name) => {
+  if (!data[name]) {
+    errors[name] = 'Required';
+  }
+  return errors;
+}, {});
+
+function validate(data) {
+  const errors = {};
+  if(!data.rows)
+    errors.rows = 'Required';
+  if(!data.format)
+    errors.format = 'Required';
+  errors.fields = _.map(data.fields, requireFields('name', 'type'));
+  return errors;
+}
 const GenForm = reduxForm({
   form: 'genForm',
   fields: ['rows', 'format', 'fields[].name', 'fields[].type', 'fields[].options'],
+  validate,
   initialValues: {rows: 100, format: 'JSON', fields: [
     {name: 'id', type: 'id'},
     {name: 'uuid', type: 'uuid'},

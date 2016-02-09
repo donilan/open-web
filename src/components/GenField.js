@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 import { DragSource, DropTarget } from 'react-dnd';
-import {Input, ListGroupItem} from 'react-bootstrap';
+import {Input, ListGroupItem, Button, ButtonGroup, Modal} from 'react-bootstrap';
 
 const cardSource = {
   beginDrag(props) {
@@ -72,7 +72,31 @@ class GenField extends Component {
     connectDragSource: PropTypes.func.isRequired,
     connectDropTarget: PropTypes.func.isRequired,
     moveField: PropTypes.func.isRequired,
+    removeField: PropTypes.func.isRequired
   };
+  constructor(props) {
+    super(props);
+    this.state = {dialogOpen: false};
+  }
+
+  renderDialog() {
+    return (
+      <Modal show={this.state.dialogOpen} onHide={()=>this.setState({dialogOpen: false})}>
+        <Modal.Header>
+          <Modal.Title>Modal title</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          One fine body...
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button onClick={()=>this.setState({dialogOpen: false})}>Close</Button>
+          <Button bsStyle="primary">Save changes</Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
 
   render() {
     const {field: {name, type}, index, fieldsMeta, isDragging, connectDragSource,
@@ -81,15 +105,26 @@ class GenField extends Component {
       <div className="row" style={{ opacity: isDragging ? 0 : 1 }}>
         <div className="col-xs-1">{index+1}</div>
         <div className="col-xs-2">
-          <Input type="text" {...name} />
+          <Input type="text" bsStyle={name.error ? 'error': null} {...name} />
         </div>
-        <div className="col-xs-2">
-          <Input type="select" {...type} value={type.value || ''}>
+        <div className="col-xs-4">
+          <Input type="select" {...type} value={type.value || ''}
+            bsStyle={type.error ? 'error': null}>
+          <option></option>
           {_.map(_.keys(fieldsMeta), (key)=>{
             return <option key={key} value={key}>{fieldsMeta[key].desc}</option>;
            })}
             </Input>
         </div>
+        <div className="col-xs-4">
+          <ButtonGroup>
+            <Button bsStyle="primary" bsSize="small"
+              onClick={()=>this.setState({dialogOpen: true})}>Config</Button>
+            <Button bsStyle="danger" bsSize="small"
+              onClick={(e)=> this.props.removeField(e, index)} >Remove</Button>
+          </ButtonGroup>
+        </div>
+        {this.renderDialog()}
       </div>
     ));
   }
