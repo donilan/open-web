@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {reduxForm, addArrayValue} from 'redux-form';
-import {fetchData} from '../actions/gen';
+import {fetchData, fetchDataUrl} from '../actions/gen';
 import {Button, Table, Input, ListGroup, ListGroupItem} from 'react-bootstrap';
 
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -17,9 +17,8 @@ class GenForm extends Component {
   };
 
   renderPreview() {
-    if(this.props.gen.data.length > 0) {
-      var result = _.join(this.props.gen.data, "\n")
-      return <pre>{result}</pre>;
+    if(this.props.gen.data) {
+      return <pre>{this.props.gen.data}</pre>;
     }
     return null;
   }
@@ -29,6 +28,11 @@ class GenForm extends Component {
   }
   removeField(e, index) {
     this.props.fields.fields.removeField(index);
+  }
+
+  handleDownload(fields) {
+    let url = fetchDataUrl(fields, fields.format);
+    window.open(url);
   }
 
   render() {
@@ -59,10 +63,13 @@ class GenForm extends Component {
                                                                     {...rows} />
             </div>
             <div className="col-xs-4">
-              <Input type="text" addonBefore="Format" disabled={true} bsStyle={format.error ? 'error' : null}
-                buttonAfter={<Button bsStyle="primary"
-                             type="submit" value="download" disabled={true}>Download</Button>}
-                                                                      {...format} />
+              <Input type="select" addonBefore="Format" bsStyle={format.error ? 'error' : null}
+                buttonAfter={<Button bsStyle="primary" onClick={handleSubmit(this.handleDownload)}
+                             type="submit" value="download" >Download</Button>}
+                {...format} >
+                <option value="json">JSON</option>
+                <option value="csv">CSV</option>
+                </Input>
             </div>
           </div>
         </form>
@@ -93,7 +100,7 @@ const ReduxGenForm = reduxForm({
   form: 'genForm',
   /* fields: ['rows', 'format', 'fields[].name', 'fields[].type', 'fields[].options'], */
   validate,
-  initialValues: {rows: 100, format: 'JSON', fields: [
+  initialValues: {rows: 100, format: 'json', fields: [
     {name: 'id', type: 'row_number'},
     {name: 'uuid', type: 'uuid'},
     {name: 'first_name', type: 'first_name_en'},

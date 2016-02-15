@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 const initialState = {
   running: false,
   fieldsMeta: [],
-  data: []
+  data: null
 };
 
 export default createReducer({

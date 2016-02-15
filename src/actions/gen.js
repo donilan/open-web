@@ -11,11 +11,14 @@ export const receiveFields = createAction();
 /* const HOST = 'api.ii2d.com'; */
 const HOST = 'localhost:3001';
 
+export function fetchDataUrl(fields, type='csv') {
+  return `http://${HOST}/api/v1/gen.${type}?params=${JSON.stringify(fields)}`;
+}
+
 export function fetchData(fields, dispatch) {
   dispatch(requestData());
-  return fetch(`http://${HOST}/api/v1/gen?params=${JSON.stringify(fields)}`)
-                                                       .then((resp)=> resp.json())
-                                                       .then((json)=> dispatch(receiveData(json)));
+  return fetch(fetchDataUrl(fields)).then((resp)=> resp.text())
+                                    .then((text)=> dispatch(receiveData(text)));
 
 }
 
