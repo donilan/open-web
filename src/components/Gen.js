@@ -87,13 +87,14 @@ class GenForm extends Component {
   }
 }
 
-const requireFields = (...names) => data =>
-names.reduce((errors, name) => {
-  if (!data[name]) {
-    errors[name] = 'Required';
-  }
-  return errors;
-}, {});
+const requireFields = (...names) => data => {
+  return names.reduce((errors, name) => {
+    if (!data[name]) {
+      errors[name] = 'Required';
+    }
+    return errors;
+  }, {});
+};
 
 function validate(data) {
   const errors = {};
@@ -104,21 +105,17 @@ function validate(data) {
   errors.fields = _.map(data.fields, requireFields('name', 'type'));
   return errors;
 }
-const ReduxGenForm = reduxForm({
-  form: 'genForm',
-  /* fields: ['rows', 'format', 'fields[].name', 'fields[].type', 'fields[].options'], */
-  validate,
-  initialValues: {rows: 50, format: 'json', fields: [
-    {name: 'id', type: 'row_number'},
-    {name: 'email', type: 'email'},
-    {name: 'gender', type: 'gender'},
-    {name: 'first_name', type: 'first_name_en'},
-    {name: 'last_name', type: 'last_name_en'},
-    {name: 'brithday', type: 'date'},
-  ]}
-})(GenForm);
 
-const DndReduxGenForm = DragDropContext(HTML5Backend)(ReduxGenForm);
+const INITIAL_VALUES = {rows: 50, format: 'json', fields: [
+  {name: 'id', type: 'row_number'},
+  {name: 'email', type: 'email'},
+  {name: 'gender', type: 'gender'},
+  {name: 'first_name', type: 'first_name_en'},
+  {name: 'last_name', type: 'last_name_en'},
+  {name: 'brithday', type: 'date'},
+]};
+
+const DndReduxGenForm = DragDropContext(HTML5Backend)(reduxForm({})(GenForm));
 export default class Gen extends Component {
   static propTypes = {
     gen: PropTypes.object.isRequired,
@@ -136,6 +133,6 @@ export default class Gen extends Component {
       return _.map(m.params, (p)=> `fields[].${p.name}`);
     })));
     let fields = ['rows', 'format', 'fields[].name', 'fields[].type'].concat(extraFields);
-    return <DndReduxGenForm fields={fields} {...this.props} />;
+    return <DndReduxGenForm form="genForm" validate={validate} fields={fields} initialValues={INITIAL_VALUES} {...this.props} />;
   }
 }
