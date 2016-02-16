@@ -93,7 +93,8 @@ class GenField extends Component {
         bool: 'checkbox',
         boolean: 'checkbox',
         string: 'text',
-        date: 'text'
+        date: 'text',
+        array: 'text'
       }[p.type];
       let f = this.props.field[p.name];
       return (

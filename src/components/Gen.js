@@ -44,7 +44,7 @@ class GenForm extends Component {
 
     return (
       <div className="container">
-        <form onSubmit={handleSubmit(fetchData)}>
+        <form >
           <div className="row">
             <div className="col-xs-1">
               <Button bsStyle="success" bsSize="xsmall" type="button"
@@ -58,7 +58,7 @@ class GenForm extends Component {
           <div className="row">
             <div className="col-xs-4">
               <Input type="text" addonBefore="# Rows" bsStyle={rows.error ? 'error' : null}
-                buttonAfter={<Button bsStyle="primary"
+                buttonAfter={<Button bsStyle="primary" onClick={handleSubmit(fetchData)}
                              type="submit" value="preview">Preview</Button>}
                                                                     {...rows} />
             </div>
@@ -102,6 +102,7 @@ const ReduxGenForm = reduxForm({
   validate,
   initialValues: {rows: 100, format: 'json', fields: [
     {name: 'id', type: 'row_number'},
+    {name: 'email', type: 'email'},
     {name: 'uuid', type: 'uuid'},
     {name: 'first_name', type: 'first_name_en'},
     {name: 'last_name', type: 'last_name_en'},
