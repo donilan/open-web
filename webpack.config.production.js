@@ -1,9 +1,9 @@
 var path = require('path');
 var webpack = require('webpack');
 
-
 module.exports = {
-  devtool: 'source-map',
+  devtool: null,
+  /* devtool: 'source-map', */
   entry: './src/index',
   output: {
     path: path.join(__dirname, 'dist'),
@@ -33,6 +33,13 @@ module.exports = {
       test: /\.js$/,
       loaders: ['babel'],
       exclude: /node_modules/
-    }]
+    }, {
+      test: /\.(png|jpg|ttf|eot|svg|woff2|woff)$/,
+      loader: 'url?limit=25000'
+    }, {
+      test: /\.scss$/,
+      loader: 'style!css!sass'
+    }
+    ]
   }
 };
