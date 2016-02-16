@@ -13,14 +13,13 @@ export default class Main extends Component {
         <Navbar>
           <Navbar.Header>
             <Navbar.Brand>
-              <Link to="/">OPEN API</Link>
+              <Link to="/">II2D</Link>
             </Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>
           <Navbar.Collapse>
             <Nav>
-              <li><Link to="/">Generator</Link></li>
-              <li><Link to="/counter">Counter</Link></li>
+              <li><Link to="/generator">Generator</Link></li>
             </Nav>
           </Navbar.Collapse>
         </Navbar>
