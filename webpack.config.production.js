@@ -15,7 +15,8 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': JSON.stringify('production')
-      }
+      },
+      '__API_SERVER__': JSON.stringify('http://api.ii2d.com/api/v1')
     }),
     new webpack.optimize.UglifyJsPlugin({
       compressor: {

@@ -8,11 +8,8 @@ export const receiveData = createAction();
 export const requestFields = createAction();
 export const receiveFields = createAction();
 
-/* const HOST = 'api.ii2d.com'; */
-const HOST = 'localhost:3001';
-
 export function fetchDataUrl(fields, type='csv') {
-  return `http://${HOST}/api/v1/gen.${type}?q=${JSON.stringify(fields)}`;
+  return `${__API_SERVER__}/gen.${type}?q=${JSON.stringify(fields)}`;
 }
 
 export function fetchData(fields, dispatch) {
@@ -25,7 +22,7 @@ export function fetchData(fields, dispatch) {
 export function fetchFieldsMeta() {
   return dispatch => {
     dispatch(requestFields());
-    return fetch(`http://${HOST}/api/v1/gen/fields_meta`)
+    return fetch(`${__API_SERVER__}/gen/fields_meta`)
       .then((resp)=> resp.json())
       .then((json)=> dispatch(receiveFields(json)));
   }
