@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 import { createReducer } from 'redux-act';
 import {addField, requestFields, receiveFields, requestData, receiveData} from '../actions/gen';
-import Immutable from 'immutable';
 
 const initialState = {
   running: false,
