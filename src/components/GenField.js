@@ -137,9 +137,9 @@ class GenField extends Component {
     const {field: {name, type}, index, fieldsMeta, isDragging, connectDragSource,
            connectDropTarget} = this.props;
     return connectDropTarget(connectDragSource(
-      <div className="row" style={{ opacity: isDragging ? 0 : 1 }}>
+      <div className="row field" style={{ opacity: isDragging ? 0 : 1 }}>
         <div className="col-xs-1">{index+1}</div>
-        <div className="col-xs-2">
+        <div className="col-xs-3">
           <Input type="text" bsStyle={name.error ? 'error': null} {...name} />
         </div>
         <div className="col-xs-4">
@@ -151,7 +151,7 @@ class GenField extends Component {
            })}
             </Input>
         </div>
-        <div className="col-xs-4">
+        <div className="col-xs-3">
           <ButtonGroup>
             {this.renderConfigBtn()}
             <Button bsStyle="danger" bsSize="small"

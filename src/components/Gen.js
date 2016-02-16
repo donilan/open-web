@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import {reduxForm, addArrayValue} from 'redux-form';
 import {fetchData, fetchDataUrl} from '../actions/gen';
-import {Button, Table, Input, ListGroup, ListGroupItem} from 'react-bootstrap';
+import {Button, Table, Input, ListGroup, ListGroupItem, ButtonGroup} from 'react-bootstrap';
 
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
@@ -43,33 +43,41 @@ class GenForm extends Component {
     });
 
     return (
-      <div className="container">
+      <div className="container generator">
         <form >
-          <div className="row">
+          <div className="row field-headers">
             <div className="col-xs-1">
-              <Button bsStyle="success" bsSize="xsmall" type="button"
-                onClick={(e)=>{fields.addField({name: `field_${fields.length+1}`})}}>ADD</Button>
+              #
             </div>
-            <div className="col-xs-2">Field Name</div>
+            <div className="col-xs-3">Field Name</div>
             <div className="col-xs-4">Field Type</div>
-            <div className="col-xs-4">Options</div>
+            <div className="col-xs-3">Options</div>
           </div>
           {fieldRows}
+          <Button type="button"
+            onClick={(e)=>{fields.addField({name: `field_${fields.length+1}`})}}>
+            Add Another Field
+          </Button>
+          <hr />
           <div className="row">
-            <div className="col-xs-4">
+            <div className="col-xs-2">
               <Input type="text" addonBefore="# Rows" bsStyle={rows.error ? 'error' : null}
-                buttonAfter={<Button bsStyle="primary" onClick={handleSubmit(fetchData)}
-                             type="submit" value="preview">Preview</Button>}
-                                                                    {...rows} />
+                {...rows} />
             </div>
-            <div className="col-xs-4">
+            <div className="col-xs-3">
               <Input type="select" addonBefore="Format" bsStyle={format.error ? 'error' : null}
-                buttonAfter={<Button bsStyle="primary" onClick={handleSubmit(this.handleDownload)}
-                             type="submit" value="download" >Download</Button>}
                 {...format} >
                 <option value="json">JSON</option>
                 <option value="csv">CSV</option>
                 </Input>
+            </div>
+            <div className="col-xs-4">
+              <ButtonGroup>
+                <Button bsStyle="primary" onClick={handleSubmit(this.handleDownload)}
+                  type="submit" value="download" >Download</Button>
+                <Button onClick={handleSubmit(fetchData)}
+                             type="submit" value="preview">Preview</Button>
+              </ButtonGroup>
             </div>
           </div>
         </form>
@@ -100,10 +108,10 @@ const ReduxGenForm = reduxForm({
   form: 'genForm',
   /* fields: ['rows', 'format', 'fields[].name', 'fields[].type', 'fields[].options'], */
   validate,
-  initialValues: {rows: 100, format: 'json', fields: [
+  initialValues: {rows: 50, format: 'json', fields: [
     {name: 'id', type: 'row_number'},
     {name: 'email', type: 'email'},
-    {name: 'uuid', type: 'uuid'},
+    {name: 'gender', type: 'gender'},
     {name: 'first_name', type: 'first_name_en'},
     {name: 'last_name', type: 'last_name_en'},
     {name: 'brithday', type: 'date'},
