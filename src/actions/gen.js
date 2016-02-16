@@ -12,7 +12,7 @@ export const receiveFields = createAction();
 const HOST = 'localhost:3001';
 
 export function fetchDataUrl(fields, type='csv') {
-  return `http://${HOST}/api/v1/gen.${type}?params=${JSON.stringify(fields)}`;
+  return `http://${HOST}/api/v1/gen.${type}?q=${JSON.stringify(fields)}`;
 }
 
 export function fetchData(fields, dispatch) {

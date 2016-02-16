@@ -15,6 +15,10 @@ class GenForm extends Component {
     fields: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func.isRequired,
   };
+  constructor(props) {
+    super(props);
+    this.state = {shareLink: null, apiLink: null};
+  }
 
   renderPreview() {
     if(this.props.gen.data) {
@@ -33,6 +37,66 @@ class GenForm extends Component {
   handleDownload(fields) {
     let url = fetchDataUrl(fields, fields.format);
     window.open(url);
+  }
+  handleShareLink(fields) {
+    this.setState({
+      shareLink: encodeURI(`${window.location.origin}${window.location.pathname}?q=${JSON.stringify(fields)}`)
+    });
+  }
+  handleApiLink(fields) {
+    this.setState({apiLink: encodeURI(fetchDataUrl(fields, fields.format))});
+  }
+  renderButtons(handleSubmit, rows, format) {
+    return (
+      <div className="row">
+        <div className="col-xs-2">
+          <Input type="text" addonBefore="# Rows" bsStyle={rows.error ? 'error' : null}
+            {...rows} />
+        </div>
+        <div className="col-xs-3">
+          <Input type="select" addonBefore="Format" bsStyle={format.error ? 'error' : null}
+            {...format} >
+            <option value="json">JSON</option>
+            <option value="csv">CSV</option>
+          </Input>
+        </div>
+        <div className="col-xs-5">
+          <ButtonGroup>
+            <Button bsStyle="primary" onClick={handleSubmit(this.handleDownload)}
+              type="submit" value="download" >Download</Button>
+            <Button onClick={handleSubmit(fetchData)}
+              type="submit" value="preview">Preview</Button>
+            <Button onClick={handleSubmit(this.handleShareLink.bind(this))} >Share</Button>
+            <Button onClick={handleSubmit(this.handleApiLink.bind(this))} >API</Button>
+          </ButtonGroup>
+        </div>
+      </div>
+    );
+  }
+
+  renderLink() {
+    let shareLink = null;
+    let apiLink = null;
+    if(this.state.shareLink) {
+      shareLink = (
+        <div className="col-xs-12">
+          <Input type="text" addonBefore="Share" disabled={true} value={this.state.shareLink} />
+        </div>
+      );
+    }
+    if(this.state.apiLink) {
+      apiLink = (
+        <div className="col-xs-12">
+          <Input type="text" addonBefore="API" disabled={true} value={this.state.apiLink} />
+        </div>
+      );
+    }
+    return (
+      <div className="row">
+        {shareLink}
+        {apiLink}
+      </div>
+    );
   }
 
   render() {
@@ -58,28 +122,11 @@ class GenForm extends Component {
             onClick={(e)=>{fields.addField({name: `field_${fields.length+1}`})}}>
             Add Another Field
           </Button>
+
           <hr />
-          <div className="row">
-            <div className="col-xs-2">
-              <Input type="text" addonBefore="# Rows" bsStyle={rows.error ? 'error' : null}
-                {...rows} />
-            </div>
-            <div className="col-xs-3">
-              <Input type="select" addonBefore="Format" bsStyle={format.error ? 'error' : null}
-                {...format} >
-                <option value="json">JSON</option>
-                <option value="csv">CSV</option>
-                </Input>
-            </div>
-            <div className="col-xs-4">
-              <ButtonGroup>
-                <Button bsStyle="primary" onClick={handleSubmit(this.handleDownload)}
-                  type="submit" value="download" >Download</Button>
-                <Button onClick={handleSubmit(fetchData)}
-                             type="submit" value="preview">Preview</Button>
-              </ButtonGroup>
-            </div>
-          </div>
+          {this.renderButtons(handleSubmit, rows, format)}
+          <hr />
+          {this.renderLink()}
         </form>
         {this.renderPreview()}
       </div>
@@ -129,10 +176,15 @@ export default class Gen extends Component {
     let meta = this.props.gen.fieldsMeta;
     if(!meta)
       return <h1>Loading...</h1>;
+    let initialValues = INITIAL_VALUES;
+    if(this.props.location.query.q) {
+      initialValues = JSON.parse(this.props.location.query.q);
+    }
     let extraFields = _.uniq(_.flatten(_.map(_.values(meta), (m)=> {
       return _.map(m.params, (p)=> `fields[].${p.name}`);
     })));
     let fields = ['rows', 'format', 'fields[].name', 'fields[].type'].concat(extraFields);
-    return <DndReduxGenForm form="genForm" validate={validate} fields={fields} initialValues={INITIAL_VALUES} {...this.props} />;
+    return <DndReduxGenForm form="genForm" validate={validate} fields={fields}
+             initialValues={initialValues} {...this.props} />;
   }
 }
