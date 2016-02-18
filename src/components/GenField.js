@@ -94,16 +94,27 @@ class GenField extends Component {
         boolean: 'checkbox',
         string: 'text',
         date: 'text',
-        array: 'text'
+        array: 'text',
+        choice: 'select'
       }[p.type];
       let f = this.props.field[p.name];
+      let input = null;
+      if(p.type === 'choice') {
+        input = (
+          <Input type={type} value={f.value || p.default} {...f} >
+            {_.keys(p.options).map((k)=> <option value={k} key={k}>{p.options[k]}</option>)}
+          </Input>
+        );
+      } else {
+        input = <Input type={type} value={f.value || p.default} {...f} />;
+      }
       return (
         <div className="row" key={i}>
           <div className="col-xs-5">
             <label>{p.desc}</label>
           </div>
           <div className="col-xs-7">
-            <Input type={type} value={f.value || p.default} {...f} />
+            {input}
           </div>
         </div>
       );

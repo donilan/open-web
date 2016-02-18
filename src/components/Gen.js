@@ -160,6 +160,7 @@ const INITIAL_VALUES = {rows: 50, format: 'json', fields: [
   {name: 'first_name', type: 'first_name_en'},
   {name: 'last_name', type: 'last_name_en'},
   {name: 'brithday', type: 'date'},
+  {name: 'country', type: 'country'}
 ]};
 
 const DndReduxGenForm = DragDropContext(HTML5Backend)(reduxForm({})(GenForm));
