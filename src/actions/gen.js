@@ -22,7 +22,7 @@ export function fetchData(fields, dispatch) {
 export function fetchFieldsMeta() {
   return dispatch => {
     dispatch(requestFields());
-    return fetch(`${__API_SERVER__}/gen/fields_meta`)
+    return fetch(`${__API_SERVER__}/gen/metas`)
       .then((resp)=> resp.json())
       .then((json)=> dispatch(receiveFields(json)));
   }
