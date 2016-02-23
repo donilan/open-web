@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {reduxForm, addArrayValue} from 'redux-form';
-import {fetchData, fetchDataUrl} from '../actions/gen';
+import {fetchDataUrl} from '../actions/gen';
 import {Button, Table, Input, ListGroup, ListGroupItem, ButtonGroup} from 'react-bootstrap';
 
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -64,7 +64,7 @@ class GenForm extends Component {
           <ButtonGroup>
             <Button bsStyle="primary" onClick={handleSubmit(this.handleDownload)}
               type="submit" value="download" >Download</Button>
-            <Button onClick={handleSubmit(fetchData)}
+            <Button onClick={handleSubmit(this.props.fetchData)}
               type="submit" value="preview">Preview</Button>
             <Button onClick={handleSubmit(this.handleShareLink.bind(this))} >Share</Button>
             <Button onClick={handleSubmit(this.handleApiLink.bind(this))} >API</Button>
@@ -180,7 +180,7 @@ export default class Gen extends Component {
     if(!meta)
       return <h1>Loading...</h1>;
     let initialValues = INITIAL_VALUES;
-    if(this.props.location.query.q) {
+    if(this.props.location.query && this.props.location.query.q) {
       initialValues = JSON.parse(this.props.location.query.q);
     }
     let extraFields = _.uniq(_.flatten(_.map(_.values(meta), (m)=> {

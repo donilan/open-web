@@ -1,4 +1,4 @@
-import { bindActionCreators } from 'redux';
+
 import { connect } from 'react-redux';
 import Gen from '../components/Gen';
 import * as GenActions from '../actions/gen';
@@ -10,10 +10,4 @@ function mapStateToProps(state) {
   };
 }
 
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(GenActions, dispatch);
-}
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(Gen);
+export default connect(mapStateToProps, GenActions)(Gen);
