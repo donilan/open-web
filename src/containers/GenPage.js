@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { ReduxAsyncConnect, asyncConnect } from 'redux-async-connect'
 import _ from 'lodash';
 
 import GenForm from '../components/GenForm';
@@ -36,6 +37,13 @@ function validate(data) {
   return errors;
 }
 
+@asyncConnect([{
+  promise: ({store: {dispatch}})=> {
+    let action = GenActions.fetchFieldsMeta();
+    dispatch(action);
+    return Promise.all([action.payload]);
+  }
+}])
 @connect(
   state => ({gen: state.gen}),
   GenActions
@@ -45,21 +53,15 @@ export default class Gen extends Component {
     gen: PropTypes.object.isRequired,
   };
 
-  componentWillMount() {
-    this.props.fetchFieldsMeta();
-  }
-
   render() {
-    let meta = this.props.gen.fieldsMeta;
-    if(!meta)
-      return <h1>Loading...</h1>;
     let initialValues = INITIAL_VALUES;
     if(this.props.location.query && this.props.location.query.q) {
       initialValues = JSON.parse(this.props.location.query.q);
     }
-    let extraFields = _.uniq(_.flatten(_.map(_.values(meta), (m)=> {
+    let extraFields = _.uniq(_.flatten(_.map(_.values(this.props.gen.fieldsMeta), (m)=> {
       return _.map(m.params, (p)=> `fields[].${p.name}`);
     })));
+    
     let fields = ['rows', 'format', 'fields[].name', 'fields[].type'].concat(extraFields);
     return <GenForm form="genForm" validate={validate} fields={fields}
              initialValues={initialValues} {...this.props} />;

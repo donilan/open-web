@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 
 import path from 'path';
 import { RoutingContext, match } from 'react-router';
+import { ReduxAsyncConnect, loadOnServer, reducer as reduxAsyncConnect } from 'redux-async-connect'
 import createMemoryHistory from 'history/lib/createMemoryHistory';
 import createLocation from 'history/lib/createLocation';
 
@@ -52,13 +53,15 @@ app.get('/*', function (req, res) {
     } else if (renderProps == null) {
       res.status(404).send('Not found')
     } else {
-      let reduxState = JSON.stringify(store.getState());
-      let html = renderToString(
-        <Provider store={store}>
-          <RoutingContext {...renderProps} />
-        </Provider>
-      );
-      res.render('index', { html, reduxState, scriptSrcs: []});
+      loadOnServer({...renderProps, store, helpers: {}}).then(() => {
+        let reduxState = JSON.stringify(store.getState());
+        let html = renderToString(
+          <Provider store={store} key="provider">
+            <ReduxAsyncConnect {...renderProps} />
+          </Provider>
+        );
+        res.render('index', { html, reduxState, scriptSrcs: []});
+      });
     }
   });
 });
