@@ -6,7 +6,8 @@
   "license": "MIT",
   "repository": "donilan/open-web",
   "scripts": {
-    "start": "babel-node src/server/server",
+    "start": "node src/server/no-server-rendering",
+    "server-rendering": "babel-node src/server/server",
     "clean": "rimraf lib dist coverage",
     "lint": "eslint src test",
     "test": "cross-env NODE_ENV=test mocha --compilers js:babel-core/register --recursive --require ./test/setup.js",
