@@ -9,17 +9,17 @@ import { ReduxAsyncConnect, loadOnServer, reducer as reduxAsyncConnect } from 'r
 import createMemoryHistory from 'history/lib/createMemoryHistory';
 import createLocation from 'history/lib/createLocation';
 
-import webpackConfig from '../webpack.config';
+import webpackConfig from '../../webpack.config';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 
 import express from 'express';
 import webpack from 'webpack';
 import { renderToString } from 'react-dom/server';
-import reducers from '../src/reducers';
+import reducers from '../reducers';
 
-import createRoutes from '../src/routes';
-import configureStore from '../src/store/configureStore';
+import createRoutes from '../routes';
+import configureStore from '../store/configureStore';
 
 
 const app = express();
