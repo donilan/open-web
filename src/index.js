@@ -2,6 +2,7 @@ import 'babel-polyfill';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { browserHistory } from 'react-router';
 import createBrowserHistory from 'history/lib/createBrowserHistory';
 
 import configureStore from './store/configureStore';
@@ -15,21 +16,16 @@ require('./app.scss');
 var injectTapEventPlugin = require("react-tap-event-plugin");
 injectTapEventPlugin();
 
-const history = createBrowserHistory();
-
 let reduxState;
-if (window.__REDUX_STATE__) {
-  try {
-    reduxState = JSON.parse(unescape(__REDUX_STATE__));
-  } catch (e) {
-  }
+if (window.__INITIAL_STATE__) {
+  reduxState = JSON.parse(unescape(window.__INITIAL_STATE__));
 }
 
 const store = configureStore(reduxState);
 
 ReactDOM.render((
   <Provider store={store}>
-    { createRoutes(history) }
+    { createRoutes(browserHistory) }
   </Provider>
 ), document.getElementById('root'));
 

@@ -38,10 +38,16 @@ function validate(data) {
 }
 
 @asyncConnect([{
-  promise: ({store: {dispatch}})=> {
-    let action = GenActions.fetchFieldsMeta();
-    dispatch(action);
-    return Promise.all([action.payload]);
+  promise: ({store: {dispatch, getState}})=> {
+    let promises = [];
+    if(!getState().gen || getState().gen.fieldsMeta.length < 1) {
+      console.log('fetching fields meta');
+      console.log(getState());
+      let action = GenActions.fetchFieldsMeta();
+      dispatch(action);
+      promises.push(action.payload);
+    }
+    return Promise.all(promises);
   }
 }])
 @connect(

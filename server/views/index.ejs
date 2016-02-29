@@ -6,7 +6,7 @@
     <div id="root"><%- html %></div>
     </div>
     <script type="text/javascript" charset="utf-8">
-      window.__INITIAL_STATE__ = '<%= JSON.stringify(reduxState) %>';
+      window.__INITIAL_STATE__ = '<%- reduxState %>';
     </script>
   </body>
   <script src="/static/bundle.js"></script>
