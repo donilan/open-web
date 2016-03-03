@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   devtool: null,
@@ -11,6 +12,7 @@ module.exports = {
     publicPath: '/static/'
   },
   plugins: [
+    new ExtractTextPlugin("app.css"),
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.DefinePlugin({
       'process.env': {
@@ -38,7 +40,7 @@ module.exports = {
       loader: 'url?limit=25000'
     }, {
       test: /\.scss$/,
-      loader: 'style!css!sass'
+      loader: ExtractTextPlugin.extract('style', 'css!sass')
     }
     ]
   }
