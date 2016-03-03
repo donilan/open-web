@@ -23,10 +23,26 @@ import configureStore from '../store/configureStore';
 
 
 const app = express();
-const port = 3000;
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+const renderFullPage = (html, initialState) => {
+  return `
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Isomorphic Redux Example</title>
+        <link rel="stylesheet" type="text/css" href="/static/app.css">
+      </head>
+      <body>
+        <div id="root">${html}</div>
+        <script>
+          window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
+        </script>
+        <script src="/static/bundle.js"></script>
+      </body>
+    </html>
+  `;
+}
 
 if(process.env.NODE_ENV !== 'production'){
   console.log('webpack dev mode %s', webpackConfig.output.publicPath);
@@ -58,18 +74,19 @@ app.get('/*', function (req, res) {
         let html = renderToString(
           <Provider store={store} key="provider">
             <ReduxAsyncConnect {...renderProps} />
+
           </Provider>
         );
-        res.render('index', { html, reduxState, scriptSrcs: []});
+        res.status(200).end(renderFullPage(html, reduxState))
       });
     }
   });
 });
 
-app.listen(port, 'localhost', function(err) {
+app.listen(3000, 'localhost', function(err) {
   if (err) {
     console.log(err);
     return;
   }
-  console.log('Listening at http://localhost: ' + port);
+  console.log('Listening at http://localhost: 3000');
 });

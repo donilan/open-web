@@ -67,9 +67,12 @@ export default class Gen extends Component {
     let extraFields = _.uniq(_.flatten(_.map(_.values(this.props.gen.fieldsMeta), (m)=> {
       return _.map(m.params, (p)=> `fields[].${p.name}`);
     })));
-    
     let fields = ['rows', 'format', 'fields[].name', 'fields[].type'].concat(extraFields);
-    return <GenForm form="genForm" validate={validate} fields={fields}
-             initialValues={initialValues} {...this.props} />;
+    return (
+      <div>
+         <GenForm form="genForm" validate={validate} fields={fields}
+             initialValues={initialValues} {...this.props} />
+      </div>
+    );
   }
 }

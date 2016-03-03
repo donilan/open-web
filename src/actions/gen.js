@@ -1,6 +1,6 @@
 const fetch = require('isomorphic-fetch');
 
-const __API_SERVER__ = 'http://api.ii2d.com/api/v1';
+const __API_SERVER__ = 'http://localhost:3001/api/v1';
 export const RECEIVE_FIELDS = 'RECEIVE_FIELDS';
 export const RECEIVE_DATA = 'RECEIVE_DATA';
 
