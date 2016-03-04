@@ -41,8 +41,6 @@ function validate(data) {
   promise: ({store: {dispatch, getState}})=> {
     let promises = [];
     if(!getState().gen || getState().gen.fieldsMeta.length < 1) {
-      console.log('fetching fields meta');
-      console.log(getState());
       let action = GenActions.fetchFieldsMeta();
       dispatch(action);
       promises.push(action.payload);
@@ -69,10 +67,8 @@ export default class Gen extends Component {
     })));
     let fields = ['rows', 'format', 'fields[].name', 'fields[].type'].concat(extraFields);
     return (
-      <div>
-         <GenForm form="genForm" validate={validate} fields={fields}
-             initialValues={initialValues} {...this.props} />
-      </div>
+      <GenForm form="genForm" validate={validate} fields={fields}
+        initialValues={initialValues} {...this.props} />
     );
   }
 }

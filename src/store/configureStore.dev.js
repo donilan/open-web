@@ -5,16 +5,20 @@ import createLogger from 'redux-logger';
 import { persistState } from 'redux-devtools';
 import rootReducer from '../reducers';
 import DevTools from '../containers/DevTools';
-
+import config from '../config';
 
 const loggerMiddleware = createLogger({
   level: 'info',
   collapsed: true
 });
 
+let middlewares = [thunkMiddleware, promiseMiddleware];
+if(!config.is_server) {
+  middlewares.push(loggerMiddleware);
+}
 
 const finalCreateStore = compose(
-  applyMiddleware(thunkMiddleware, promiseMiddleware, loggerMiddleware),
+  applyMiddleware(...middlewares),
   DevTools.instrument()
 )(createStore);
 

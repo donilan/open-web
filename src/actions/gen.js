@@ -1,11 +1,11 @@
-const fetch = require('isomorphic-fetch');
+import fetch from 'isomorphic-fetch';
+import config from '../config';
 
-const __API_SERVER__ = 'http://localhost:3001/api/v1';
 export const RECEIVE_FIELDS = 'RECEIVE_FIELDS';
 export const RECEIVE_DATA = 'RECEIVE_DATA';
 
 export function fetchDataUrl(fields, type='csv') {
-  return `${__API_SERVER__}/gen.${type}?q=${JSON.stringify(fields)}`;
+  return `${config.api_server}/gen.${type}?q=${JSON.stringify(fields)}`;
 }
 
 export function fetchData(fields) {
@@ -18,6 +18,6 @@ export function fetchData(fields) {
 export function fetchFieldsMeta() {
   return {
     type: RECEIVE_FIELDS,
-    payload: fetch(`${__API_SERVER__}/gen/metas`).then((resp)=> resp.json())
+    payload: fetch(`${config.api_server}/gen/metas`).then((resp)=> resp.json())
   };
 }

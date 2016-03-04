@@ -21,7 +21,6 @@ import reducers from '../reducers';
 import createRoutes from '../routes';
 import configureStore from '../store/configureStore';
 
-
 const app = express();
 
 const renderFullPage = (html, initialState) => {
