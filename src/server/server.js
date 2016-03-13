@@ -17,13 +17,15 @@ import configureStore from '../common/store/configureStore';
 
 const app = express();
 const renderFullPage = (html, initialState) => {
+  let css = process.env.NODE_ENV === 'production' ? '<link rel="stylesheet" type="text/css" href="/static/app.css">' : '';
   return `
     <!doctype html>
     <html>
       <head>
         <meta charset="utf-8">
-        <title>Isomorphic Redux Example</title>
-        <link rel="stylesheet" type="text/css" href="/static/app.css">
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport" />
+        <title>II2D</title>
+        ${css}
       </head>
       <body>
         <div id="root">${html}</div>
@@ -45,24 +47,28 @@ if(process.env.NODE_ENV === 'production'){
 }
 
 app.get('/*', function (req, res) {
-  let location = createLocation(req.url);
-  match({ routes, location }, (error, redirectLocation, renderProps) => {
-    if (redirectLocation) {
-      res.redirect(301, redirectLocation.pathname + redirectLocation.search);
-    } else if (error) {
-      res.status(500).send(error.message);
-    } else if (renderProps == null) {
-      res.status(404).send('Not found')
-    } else {
-      const store = configureStore();
-      const InitialView = (
-        <Provider store={store}>
-          <RouterContext {...renderProps} />
-        </Provider>
-      );
-      res.status(200).end(renderFullPage(renderToString(InitialView), {}));
-    }
-  });
+  if(process.env.NODE_ENV === 'production' || process.env.SERVER_RENDER){
+    let location = createLocation(req.url);
+    match({ routes, location }, (error, redirectLocation, renderProps) => {
+      if (redirectLocation) {
+        res.redirect(301, redirectLocation.pathname + redirectLocation.search);
+      } else if (error) {
+        res.status(500).send(error.message);
+      } else if (renderProps == null) {
+        res.status(404).send('Not found')
+      } else {
+        const store = configureStore();
+        const InitialView = (
+          <Provider store={store}>
+            <RouterContext {...renderProps} />
+          </Provider>
+        );
+        res.status(200).end(renderFullPage(renderToString(InitialView), store.getState()));
+      }
+    });
+  } else {
+    res.status(200).end(renderFullPage('', {}));
+  }
 })
 
 const server = app.listen(3000, function () {

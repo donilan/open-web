@@ -4,7 +4,6 @@ var _ = require('lodash');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var plugins = [
-  new ExtractTextPlugin("app.css"),
   new webpack.optimize.OccurenceOrderPlugin(),
   new webpack.NoErrorsPlugin(),
   new webpack.DefinePlugin({
@@ -17,11 +16,16 @@ var plugins = [
 var webpackConfig = {
   devtool: false,
   output: {
-    path: path.join(__dirname, 'www'),
+    path: path.join(__dirname, 'build'),
     filename: 'app.js',
     publicPath: '/static/'
-  },
-  module: {
+  }
+};
+
+if (process.env.NODE_ENV === 'production') {
+  plugins.push(new webpack.optimize.UglifyJsPlugin({minimize: true}));
+  plugins.push(new ExtractTextPlugin("app.css"));
+  webpackConfig.module = {
     loaders: [
       {
         test: /\.js$/,
@@ -37,11 +41,7 @@ var webpackConfig = {
         loader: ExtractTextPlugin.extract('style', 'css!sass')
       }
     ]
-  }
-};
-
-if (process.env.NODE_ENV === 'production') {
-  plugins.push(new webpack.optimize.UglifyJsPlugin({minimize: true}));
+  };
   webpackConfig = _.extend(webpackConfig, {
     entry : [
       './src/client/index.js'
@@ -50,6 +50,37 @@ if (process.env.NODE_ENV === 'production') {
   });
 } else {
   plugins.push(new webpack.HotModuleReplacementPlugin());
+  webpackConfig.module = {
+    loaders: [
+      {
+        test: /\.js$/,
+        loader: 'babel',
+        exclude: /node_modules/,
+        query: {
+          plugins: [
+            ["react-transform", {
+              transforms: [{
+                transform: "react-transform-hmr",
+                imports: ["react"],
+                locals: ["module"]
+              }, {
+                "transform": "react-transform-catch-errors",
+                "imports": ["react", "redbox-react"]
+              }]
+            }]
+          ]
+        }
+      },
+      {
+        test: /\.(png|jpg|ttf|eot|svg|woff2|woff)$/,
+        loader: 'url?limit=25000'
+      },
+      {
+        test: /\.scss$/,
+        loader: 'style!css!sass'
+      }
+    ]
+  };
   webpackConfig = _.extend(webpackConfig, {
     devtool: 'eval',
     entry : [
@@ -58,20 +89,6 @@ if (process.env.NODE_ENV === 'production') {
     ],
     plugins: plugins
   });
-  webpackConfig.module.loaders[0]['query'] = {
-    plugins: [
-      ["react-transform", {
-        transforms: [{
-          transform: "react-transform-hmr",
-          imports: ["react"],
-          locals: ["module"]
-        }, {
-          "transform": "react-transform-catch-errors",
-          "imports": ["react", "redbox-react"]
-        }]
-      }]
-    ]
-  };
 }
 
 module.exports = webpackConfig;
