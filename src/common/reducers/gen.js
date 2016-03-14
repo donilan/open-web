@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-import { createReducer } from 'redux-act';
 import {RECEIVE_DATA, RECEIVE_FIELDS} from '../actions/gen';
 
 const initialState = {
