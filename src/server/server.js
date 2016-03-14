@@ -24,68 +24,65 @@ import configureStore from '../store/configureStore';
 const app = express();
 
 const renderFullPage = (html, initialState) => {
+  let css = process.env.NODE_ENV === 'production' ? '<link rel="stylesheet" type="text/css" href="/static/app.css">' : '';
   return `
     <!doctype html>
     <html>
       <head>
         <meta charset="utf-8">
-        <title>Isomorphic Redux Example</title>
-        <link rel="stylesheet" type="text/css" href="/static/app.css">
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport" />
+        <title>II2D</title>
+        ${css}
       </head>
       <body>
         <div id="root">${html}</div>
         <script>
           window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
-        <script src="/static/bundle.js"></script>
+        <script src="/static/app.js"></script>
       </body>
     </html>
   `;
 }
 
-if(process.env.NODE_ENV !== 'production'){
-  console.log('webpack dev mode %s', webpackConfig.output.publicPath);
+if(process.env.NODE_ENV === 'production'){
+  app.use('/static', express.static(__dirname + '/../../www'));
+}else{
   const compiler = webpack(webpackConfig);
   app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: webpackConfig.output.publicPath }));
   app.use(webpackHotMiddleware(compiler));
-}else{
-  app.use('/static', express.static(__dirname + '/../dist'));
 }
 
 app.get('/*', function (req, res) {
-  let history = createMemoryHistory();
-  let store = configureStore();
+  if(process.env.NODE_ENV === 'production' || process.env.SERVER_RENDER){
+    let location = createLocation(req.url);
+    match({ routes, location }, (error, redirectLocation, renderProps) => {
+      if (redirectLocation) {
+        res.redirect(301, redirectLocation.pathname + redirectLocation.search);
+      } else if (error) {
+        res.status(500).send(error.message);
+      } else if (renderProps == null) {
+        res.status(404).send('Not found')
+      } else {
+        loadOnServer({...renderProps, store, helpers: {}}).then(() => {
+          let reduxState = JSON.stringify(store.getState());
+          let html = renderToString(
+            <Provider store={store} key="provider">
+              <ReduxAsyncConnect {...renderProps} />
 
-  let routes = createRoutes(history);
-
-  let location = createLocation(req.url);
-
-  match({ routes, location }, (error, redirectLocation, renderProps) => {
-    if (redirectLocation) {
-      res.redirect(301, redirectLocation.pathname + redirectLocation.search);
-    } else if (error) {
-      res.status(500).send(error.message);
-    } else if (renderProps == null) {
-      res.status(404).send('Not found')
-    } else {
-      loadOnServer({...renderProps, store, helpers: {}}).then(() => {
-        let reduxState = JSON.stringify(store.getState());
-        let html = renderToString(
-          <Provider store={store} key="provider">
-            <ReduxAsyncConnect {...renderProps} />
-
-          </Provider>
-        );
-        res.status(200).end(renderFullPage(html, reduxState))
-      });
-    }
-  });
-});
-
-app.listen(3000, 'localhost', function(err) {
-  if (err) {
-    console.log(err);
-    return;
+            </Provider>
+          );
+          res.status(200).end(renderFullPage(html, reduxState))
+        });
+      }
+    });
+  } else {
+    res.status(200).end(renderFullPage('', {}));
   }
-  console.log('Listening at http://localhost: 3000');
+})
+
+const server = app.listen(3000, function () {
+  const host = server.address().address;
+  const port = server.address().port;
+  console.log('Example app listening at http://%s:%s', host, port);
 });
