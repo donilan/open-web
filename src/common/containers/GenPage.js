@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { ReduxAsyncConnect, asyncConnect } from 'redux-async-connect'
+
 import _ from 'lodash';
 
 import GenForm from '../components/GenForm';
@@ -37,17 +37,6 @@ function validate(data) {
   return errors;
 }
 
-@asyncConnect([{
-  promise: ({store: {dispatch, getState}})=> {
-    let promises = [];
-    if(!getState().gen || getState().gen.fieldsMeta.length < 1) {
-      let action = GenActions.fetchFieldsMeta();
-      dispatch(action);
-      promises.push(action.payload);
-    }
-    return Promise.all(promises);
-  }
-}])
 @connect(
   state => ({gen: state.gen}),
   GenActions
@@ -56,6 +45,10 @@ export default class Gen extends Component {
   static propTypes = {
     gen: PropTypes.object.isRequired,
   };
+
+  componentWillMount() {
+    this.props.fetchFieldsMeta();
+  }
 
   render() {
     let initialValues = INITIAL_VALUES;
