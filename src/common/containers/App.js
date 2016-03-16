@@ -20,6 +20,13 @@ export default class App extends Component {
           </Navbar.Collapse>
         </Navbar>
         {this.props.children}
+        <footer className="footer">
+          <div className="container">
+            <p className="center">
+              Copyright © 2014-2016 II2D. All Rights Reserved.
+            </p>
+          </div>
+        </footer>
       </div>
     );
   }
