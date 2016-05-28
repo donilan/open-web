@@ -46,7 +46,7 @@ const renderFullPage = (html, initialState) => {
 }
 
 if(process.env.NODE_ENV === 'production'){
-  app.use('/static', express.static(__dirname + '/../../www'));
+  app.use('/static', express.static(__dirname + '/../../build'));
 }else{
   const compiler = webpack(webpackConfig);
   app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: webpackConfig.output.publicPath }));
@@ -54,33 +54,7 @@ if(process.env.NODE_ENV === 'production'){
 }
 
 app.get('/*', function (req, res) {
-  if(process.env.NODE_ENV === 'production' || process.env.SERVER_RENDER){
-    let history = createMemoryHistory();
-    let store = configureStore();
-    let location = createLocation(req.url);
-    let routes = createRoutes(history);
-    match({ routes, location }, (error, redirectLocation, renderProps) => {
-      if (redirectLocation) {
-        res.redirect(301, redirectLocation.pathname + redirectLocation.search);
-      } else if (error) {
-        res.status(500).send(error.message);
-      } else if (renderProps == null) {
-        res.status(404).send('Not found')
-      } else {
-        loadOnServer({...renderProps, store, helpers: {}}).then(() => {
-          let reduxState = JSON.stringify(store.getState());
-          let html = renderToString(
-            <Provider store={store} key="provider">
-              <ReduxAsyncConnect {...renderProps} />
-            </Provider>
-          );
-          res.status(200).end(renderFullPage(html, reduxState))
-        });
-      }
-    });
-  } else {
-    res.status(200).end(renderFullPage('', {}));
-  }
+  res.status(200).end(renderFullPage('', {}));
 })
 
 const server = app.listen(3000, function () {
