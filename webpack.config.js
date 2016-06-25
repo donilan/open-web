@@ -16,9 +16,9 @@ var plugins = [
 var webpackConfig = {
   devtool: false,
   output: {
-    path: path.join(__dirname, 'build'),
+    path: path.join(__dirname, 'dist'),
     filename: 'app.js',
-    publicPath: '/static/'
+    publicPath: '/dist/'
   }
 };
 

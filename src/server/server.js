@@ -24,7 +24,7 @@ import webpackConfig from '../../webpack.config';
 const app = express();
 
 const renderFullPage = (html, initialState) => {
-  let css = process.env.NODE_ENV === 'production' ? '<link rel="stylesheet" type="text/css" href="/static/app.css">' : '';
+  let css = process.env.NODE_ENV === 'production' ? '<link rel="stylesheet" type="text/css" href="/dist/app.css">' : '';
   return `
     <!doctype html>
     <html>
@@ -39,7 +39,7 @@ const renderFullPage = (html, initialState) => {
         <script>
           window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
-        <script src="/static/app.js"></script>
+        <script src="/dist/app.js"></script>
       </body>
     </html>
   `;
