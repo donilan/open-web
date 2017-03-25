@@ -13,17 +13,12 @@ export default class App extends Component {
             </Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>
-          <Navbar.Collapse>
-            <Nav>
-              <li><Link to="/generator">Generator</Link></li>
-            </Nav>
-          </Navbar.Collapse>
         </Navbar>
         {this.props.children}
         <footer className="footer">
           <div className="container">
             <p className="center">
-              Copyright © 2014-2016 II2D. All Rights Reserved.
+              Copyright © 2016-2017 广州路比信息科技有限公司. All Rights Reserved.
             </p>
           </div>
         </footer>
